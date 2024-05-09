@@ -84,6 +84,8 @@ def get_article_data(link, browser):
     time.sleep(2)
     if check_exists_by_class_name('error404-banner_text'):
         return (None, None, None)
+    if check_exists_by_xpath('/html/body/div[1]/div[2]/div[1]/a') and browser.find_element(By.XPATH, '/html/body/div[1]/div[2]/div[1]/a').text == 'Финансовый журнал':
+        return (None, None, None)
 
     title = browser.find_element(By.CLASS_NAME, 'mb2x').text
     row_text = browser.find_elements(By.XPATH, xpth['text2'])
@@ -122,10 +124,17 @@ def parse_process(browser, url, abbr):
     # Получение списка ссылок
     link_list = get_link_list(browser)
 
+    global item_flag
+
     # Получение информации из ссылки
     for i in link_list:
         if i.startswith('https://bonds'):
             continue
+        if item_flag:
+            if i == 'https://www.finam.ru/publications/item/tatneft-vyplatit-dividendy-za-9-mesyatsev-v-razmere-3957-rublya-na-aktsiyu-20221227-1527/':
+                item_flag = False
+            else:
+                continue
         title, text, date = get_article_data(i, browser)
         if (title, text, date) == (None, None, None):
             continue
@@ -136,11 +145,11 @@ def parse_process(browser, url, abbr):
 browser = webdriver.Chrome()
 
 abbr_flag = True
-item_flag = True
+item_flag = False
 
 for abbr, link in Links.news.items():
     if abbr_flag:
-        if abbr == 'fees':
+        if abbr == 'upro':
             abbr_flag = False
         else:
             continue
