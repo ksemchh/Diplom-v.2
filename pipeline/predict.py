@@ -22,19 +22,16 @@ def createDataset(dataset, target, lookBack=1):
         dataY.append(target[i + lookBack])
     return np.array(dataX), np.array(dataY)
 
-def myprint(s):
-    with open(f'Models/{abbr}/model_description.txt', mode='w', encoding='utf-8') as file:
-        print(s, file=file)
-
 # основная программа
 for abbr, link in stocks.items():
-    df = pd.read_sql_query(f'''SELECT date, price, open, neutral, positive, negative
-                          FROM {abbr}_feat;''', connection)
+    df = pd.read_sql_query(f'''SELECT date, price, open, high, low, value, neutral, positive, negative
+                          FROM {abbr}_feat
+                          ORDER BY item_id;''', connection)
 
-    if df.values[-1][0] == date.today():
+    if df.values[-1][0] != date.today():
         continue
 
-    features = df.drop(['date', 'price'], axis=1).values
+    features = df.drop(['date'], axis=1).values
     target = df['price'].values
 
     scalerFeatures = MinMaxScaler(feature_range=(0, 1))
@@ -62,7 +59,7 @@ for abbr, link in stocks.items():
                         change REAL,
                         direction BOOL);
                 INSERT INTO {abbr}_prdicts (date, predict)
-                VALUES ('{datetime.now().strftime("%Y-%M-%d")}', '{PredictInv}', {change}, {direction});'''
+                VALUES (date_trunc('day', CURRENT_TIMESTAMP), '{PredictInv}', {change}, {direction});'''
         )
     connection.commit()
 

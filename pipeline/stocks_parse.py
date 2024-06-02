@@ -33,14 +33,13 @@ def get_currencies(browser, url, abbr):
             browser.get(url)
             # Getting the tables on the page and quiting
             data = browser.find_element(By.XPATH, '//*[@id="__next"]/div[2]/div[2]/div[2]/div[1]/div[2]/div[3]/table/tbody').text.split('\n')
-            browser.quit()
             s = data[0].split(' ')
 
             with connection.cursor() as cursor:
                 cursor.execute(
                     f'''SELECT date
                         FROM {abbr}_stocks
-                        WHERE id = (SELECT MAX(id) FROM {abbr}_stocks);'''
+                        WHERE item_id = (SELECT MAX(item_id) FROM {abbr}_stocks);'''
                 )
                 last_date = cursor.fetchone()[0]
 
@@ -72,14 +71,9 @@ def get_currencies(browser, url, abbr):
             browser = webdriver.Chrome()
             continue
 
-def inverse(abbr):
-    with connection.cursor() as cursor:
-        cursor.execute(f'''ALTER TABLE {abbr}_stocks RENAME COLUMN id TO item_id;''')
-        connection.commit()
 
 for abbr, link in stocks.items():
-#     # Создание объекта браузера
+    # Создание объекта браузера
+    browser = webdriver.Chrome()
+    get_currencies(browser, link, abbr)
 
-    # browser = webdriver.Chrome()
-    # get_currencies(browser, link, abbr)
-    inverse(abbr)
