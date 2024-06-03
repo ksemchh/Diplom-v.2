@@ -34,37 +34,37 @@ with DAG(
     t2 = BashOperator(
       task_id="news_parsing",
       depends_on_past=False,
-      bash_command="python3 /home/fitwist/airflow/df-to-looker/dialogflow-to-bigquery.py",
+      bash_command="python3 /Diplom-v.2/pipeline/news_parse.py",
       retries=2)
 
     t3 = BashOperator(
       task_id="text_preprocessing",
       depends_on_past=False,
-      bash_command="python3 /home/fitwist/airflow/df-to-looker/dialogflow-to-bigquery.py",
+      bash_command="python3 /Diplom-v.2/pipeline/text_preprocessor.py",
       retries=2)
 
     t4 = BashOperator(
       task_id="sentiment_analyze",
       depends_on_past=False,
-      bash_command="python3 /home/fitwist/airflow/df-to-looker/dialogflow-to-bigquery.py",
+      bash_command="python3 /Diplom-v.2/pipeline/sentiment_analyze.py",
       retries=2)
 
     t5 = BashOperator(
       task_id="stocks_parsing",
       depends_on_past=False,
-      bash_command="python3 /home/fitwist/airflow/df-to-looker/dialogflow-to-bigquery.py",
+      bash_command="python3 /Diplom-v.2/pipeline/stocks_parse.py",
       retries=2)
 
     t6 = BashOperator(
       task_id="data_preparing",
       depends_on_past=False,
-      bash_command="python3 /home/fitwist/airflow/df-to-looker/dialogflow-to-bigquery.py",
+      bash_command="python3 /Diplom-v.2/pipeline/data_prepapre.py",
       retries=2)
 
     t7 = BashOperator(
       task_id="predicting",
       depends_on_past=False,
-      bash_command="python3 /home/fitwist/airflow/df-to-looker/dialogflow-to-bigquery.py",
+      bash_command="python3 /Diplom-v.2/pipeline/predict.py",
       retries=2)
 
     t1 >> t5 >> t6 >> t7
